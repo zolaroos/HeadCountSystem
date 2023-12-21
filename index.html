@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Upload</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    #uploadedImageContainer img {
+      max-width: 100%;
+      height: auto;
+      width: 300px; 
+      height: 200px; 
+      margin-bottom: 10px;
+    }
+
+    #headcountChart {
+      max-width: 600px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Image Upload</h1>
+
+  <button id="startUploadingBtn">Start Uploading</button>
+
+  <div id="uploadedImageContainer"></div>
+
+  <canvas id="headcountChart"></canvas>
+
+  <script>
+    const startUploadingBtn = document.getElementById('startUploadingBtn');
+    const uploadedImageContainer = document.getElementById('uploadedImageContainer');
+    const headcountChartCanvas = document.getElementById('headcountChart').getContext('2d');
+    let currentIndex = 0;
+
+    const headcountChart = new Chart(headcountChartCanvas, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Headcount',
+          data: [],
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    async function fetchAndDisplayImages() {
+    try {
+      const response = await fetch('/display');
+      const images = await response.json();
+
+      uploadedImageContainer.innerHTML = '';
+
+      const currentImage = images[currentIndex];
+      const imgElement = document.createElement('img');
+      imgElement.src = currentImage.url;
+      imgElement.alt = 'Uploaded Image';
+
+      const pElement = document.createElement('p');
+      pElement.textContent = `Head Count: ${currentImage.token}`;
+
+      uploadedImageContainer.appendChild(imgElement);
+      uploadedImageContainer.appendChild(pElement);
+
+      if (headcountChart.data.labels.length >= 5) {
+        headcountChart.data.labels.shift();
+        headcountChart.data.datasets[0].data.shift();
+      }
+
+      headcountChart.data.labels.push(`Image ${currentIndex + 1}`);
+      headcountChart.data.datasets[0].data.push(currentImage.token);
+      headcountChart.update();
+
+      currentIndex = (currentIndex + 1) % images.length;
+    } catch (error) {
+      console.error('Error fetching and displaying images:', error);
+    }
+  }
+
+  async function uploadImage() {
+    try {
+      const response = await fetch('/upload', { method: 'POST' });
+      const result = await response.json();
+      console.log(result.message);
+      fetchAndDisplayImages();
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  }
+
+  startUploadingBtn.addEventListener('click', uploadImage);
+
+  setInterval(fetchAndDisplayImages, 30000);
+
+  fetchAndDisplayImages();
+</script>
+</body>
+</html>
