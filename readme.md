@@ -44,3 +44,6 @@ kubectl port-forward pod/assignment 8081:3334
 ```
 
 Now, you can access the application locally at `http://localhost:8080` for the app.js service and `http://localhost:8081` for the headcount.js service.
+
+### Load Balancer (Work In Progress)
+
