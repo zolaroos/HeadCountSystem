@@ -46,5 +46,16 @@ Replace `<app-pod-name>` with the actual name of the pod running the service (it
 
 Now, you can access the application locally at `http://localhost:8090`.
 
+### Scaling Pods with Horizontal Pod Autoscaler (HPA)
 
+The application is configured to automatically scale based on CPU utilization. The Horizontal Pod Autoscaler (HPA) adjusts the number of replicas based on the observed CPU usage.
 
+Autoscaling is done using:
+```bash
+kubectl autoscale deployment assignment-deployment --max=10 --cpu-percent=30
+```
+Monitor the HPA behavior using:
+
+```bash
+kubectl get hpa/assignment-deployment --watch
+```
