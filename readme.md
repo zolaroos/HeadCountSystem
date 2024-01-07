@@ -36,14 +36,15 @@ kubectl apply -f deployment.yaml
 To access the services, use port forwarding with Kubernetes:
 
 ```bash
-# Port forward for app.js service
-kubectl port-forward pod/assignment 8080:3333
+# Get Pods
+kubectl get pods
 
-# Port forward for headcount.js service
-kubectl port-forward pod/assignment 8081:3334
+# Port forward
+kubectl port-forward pod/<app-pod-name> 8090:3333
 ```
+Replace `<app-pod-name>` with the actual name of the pod running the service (it should be assignment-deployment-something).
 
-Now, you can access the application locally at `http://localhost:8080` for the app.js service and `http://localhost:8081` for the headcount.js service.
+Now, you can access the application locally at `http://localhost:8090`.
 
-### Load Balancer (Work In Progress)
+
 
